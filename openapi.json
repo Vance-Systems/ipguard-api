@@ -1,0 +1,82 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "IPGuard Enterprise - IP Geolocation, VPN & Threat Intelligence API",
+    "description": "Real-time IP Geolocation, ASN Lookup, VPN/Proxy Detection, and Fraud Risk Scoring engine. Detects datacenter hosting IPs, residential vs commercial connections, and calculates automated threat scores in sub-50ms.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Liam Vance - Director of API Operations",
+      "email": "liamvance.dev@gmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://ipguard-api.onrender.com",
+      "description": "Production Cloud Server (Render.com)"
+    }
+  ],
+  "paths": {
+    "/v1/lookup": {
+      "get": {
+        "summary": "Lookup IP Geolocation & Threat Score",
+        "description": "Returns full geographic location, ASN details, timezone, and security risk flags (VPN, Proxy, Datacenter).",
+        "operationId": "lookupIpGet",
+        "parameters": [
+          {
+            "name": "ip",
+            "in": "query",
+            "required": false,
+            "description": "Target IPv4 address. If omitted, auto-detects client IP.",
+            "schema": {
+              "type": "string",
+              "example": "8.8.8.8"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "IP Intelligence details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "ip": { "type": "string", "example": "8.8.8.8" },
+                    "country": { "type": "string", "example": "United States" },
+                    "country_code": { "type": "string", "example": "US" },
+                    "region": { "type": "string", "example": "Virginia" },
+                    "city": { "type": "string", "example": "Ashburn" },
+                    "isp": { "type": "string", "example": "Google LLC" },
+                    "asn": { "type": "string", "example": "AS15169 Google LLC" },
+                    "security": {
+                      "type": "object",
+                      "properties": {
+                        "is_datacenter": { "type": "boolean", "example": true },
+                        "is_vpn_or_proxy": { "type": "boolean", "example": true },
+                        "fraud_score": { "type": "integer", "example": 80 },
+                        "threat_level": { "type": "string", "example": "HIGH" }
+                      }
+                    },
+                    "latency_ms": { "type": "number", "example": 42.1 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check Probe",
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "description": "Service healthy"
+          }
+        }
+      }
+    }
+  }
+}
